@@ -5,6 +5,7 @@ import { Book } from '../../models/Book';
 export class BookService {
   private bookRepository = appDataSource.getRepository(Book);
 
+  // Retrieve all books sorted by creation date in descending order
   async getAllBooks(): Promise<Book[]> {
     try {
       const books = await this.bookRepository.find({
@@ -16,6 +17,7 @@ export class BookService {
     }
   }
 
+  // Filter books based on provided criteria, with pagination
   async filterBooks(filterCriteria: any, offset: number, limit: number): Promise<{ data: Book[], total: number }> {
     try {
       let whereCondition: any = [];
@@ -34,6 +36,7 @@ export class BookService {
     }
   }
 
+  // Get book by ID
   async getByID(id: string){
     try {
       const book = await this.bookRepository.findOne({ where: { id }});
@@ -43,6 +46,7 @@ export class BookService {
     }
   }
 
+  // Add a new book
   async addBook(title: string, author: string, isbn: string): Promise<Book> {
     try {
       const newBook = this.bookRepository.create({
@@ -59,6 +63,7 @@ export class BookService {
     }
   }
 
+  // Edit an existing book
   async editBook(id: string, updatedBookData: Partial<Book>): Promise<Book | null> {
     try {
       const bookToUpdate = await this.bookRepository.findOneBy({id: id});
@@ -76,6 +81,7 @@ export class BookService {
     }
   }
 
+  // Delete a book by ID
   async deleteBook(id: string): Promise<void> {
     try {
       const bookToRemove = await this.bookRepository.findOneBy({id: id});

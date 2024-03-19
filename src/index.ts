@@ -19,7 +19,7 @@ async function startServer() {
   
   // Index /
   app.get('/', (req: Request, res: Response, next: NextFunction) => {
-    res.send('Hello, World!');
+    res.send('Book App Home');
   });
   
   // Start server
