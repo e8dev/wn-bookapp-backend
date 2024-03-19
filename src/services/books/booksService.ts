@@ -1,4 +1,4 @@
-import { Like } from 'typeorm';
+import { ILike } from 'typeorm';
 import { appDataSource } from '../../database/connection';
 import { Book } from '../../models/Book';
 
@@ -7,7 +7,9 @@ export class BookService {
 
   async getAllBooks(): Promise<Book[]> {
     try {
-      const books = await this.bookRepository.find();
+      const books = await this.bookRepository.find({
+        order: { created_at: 'DESC' }
+      });
       return books;
     } catch (error) {
       throw new Error('Error fetching all books');
@@ -16,10 +18,15 @@ export class BookService {
 
   async filterBooks(filterCriteria: any, offset: number, limit: number): Promise<{ data: Book[], total: number }> {
     try {
+      let whereCondition: any = [];
+      for (const [key, value] of Object.entries(filterCriteria)) {
+        whereCondition.push({ [key]: ILike(`${value}%`) });
+      }
       const [books, total] = await this.bookRepository.findAndCount({
-        where: filterCriteria,
+        where: whereCondition,
         skip: offset,
-        take: limit
+        take: limit,
+        order: { created_at: 'DESC' }
       });
       return { data: books, total: total };
     } catch (error) {

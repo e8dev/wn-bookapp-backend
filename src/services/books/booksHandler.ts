@@ -36,22 +36,24 @@ function successResponse(res: Response, data: any){
 
 export async function listBooks(req: Request, res: Response) {
   try {
-    const { author, title, isbn, page, pageSize } = req.query;
+    //const { author, title, isbn, page, pageSize } = req.query;
+
+    const { search_q, search_item, page } = req.query;
 
     const filterCriteria: any = {};
-    if (author) {
-      filterCriteria.author = author.toString();
+    if (search_item == "author" && search_q) {
+      filterCriteria.author = search_q.toString();
     }
-    if (title) {
-      filterCriteria.title = title.toString();
+    if (search_item == "title" && search_q) {
+      filterCriteria.title = search_q.toString();
     }
-    if (isbn) {
-      filterCriteria.isbn = isbn.toString();
+    if (search_item == "isbn" && search_q) {
+      filterCriteria.isbn = search_q.toString();
     }
 
     const defaultPageSize = 2;
     const pageNumber: number = parseInt(page as string) || 1;
-    const limit: number = parseInt(pageSize as string) || defaultPageSize;
+    const limit: number = defaultPageSize;
     const offset: number = (pageNumber - 1) * limit;
 
     const result = await bookService.filterBooks(filterCriteria, offset, limit);
