@@ -1,5 +1,3 @@
-// src/handlers/booksHandler.ts
-
 import { Request, Response } from 'express';
 import { BookService } from './booksService';
 
@@ -11,44 +9,32 @@ interface IStandardResponse {
   msg: string;
 }
 
-function errorResponse(res: Response, error_external: string, error_internal: string){
-
+function errorResponse(res: Response, error_external: string, error_internal: string) {
   console.error('Error:', error_internal);
   return res.status(500).json({
     success: false,
     data: null,
     msg: error_external
-   });
-
+  });
 }
 
-function successResponse(res: Response, data: any){
-
+function successResponse(res: Response, data: any) {
   const responseObj: IStandardResponse = {
     success: true,
     data: data,
     msg: ""
-   }
+  };
 
   return res.json(responseObj);
-
 }
 
 export async function listBooks(req: Request, res: Response) {
   try {
-    //const { author, title, isbn, page, pageSize } = req.query;
-
     const { search_q, search_item, page } = req.query;
 
     const filterCriteria: any = {};
-    if (search_item == "author" && search_q) {
-      filterCriteria.author = search_q.toString();
-    }
-    if (search_item == "title" && search_q) {
-      filterCriteria.title = search_q.toString();
-    }
-    if (search_item == "isbn" && search_q) {
-      filterCriteria.isbn = search_q.toString();
+    if (search_q && (search_item === "author" || search_item === "title" || search_item === "isbn")) {
+      filterCriteria[search_item] = search_q.toString();
     }
 
     const defaultPageSize = 2;
@@ -60,7 +46,6 @@ export async function listBooks(req: Request, res: Response) {
 
     const totalPages = Math.ceil(result.total / defaultPageSize);
     
-    //return data and pagination params
     successResponse(res, {
       books: result.data,
       pagination: {
@@ -126,7 +111,6 @@ export async function deleteBook(req: Request, res: Response) {
     }
 
     await bookService.deleteBook(id);
-    //res.status(204).send();
     successResponse(res, null);
 
   } catch (error: any) {

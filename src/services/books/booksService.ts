@@ -1,4 +1,4 @@
-import { ILike } from 'typeorm';
+import { ILike, FindOptionsWhere } from 'typeorm';
 import { appDataSource } from '../../database/connection';
 import { Book } from '../../models/Book';
 
@@ -36,8 +36,8 @@ export class BookService {
 
   async getByID(id: string){
     try {
-      const book = await this.bookRepository.findOneBy({id: id});
-      return book;
+      const book = await this.bookRepository.findOne({ where: { id }});
+      return book || null; // Return null if book is not found
     } catch (error) {
       throw new Error('Error filtering books');
     }
@@ -66,7 +66,10 @@ export class BookService {
         return null; // Book not found
       }
 
-      const updatedBook = await this.bookRepository.save({ ...bookToUpdate, ...updatedBookData });
+      // Update book data
+      Object.assign(bookToUpdate, updatedBookData);
+
+      const updatedBook = await this.bookRepository.save(bookToUpdate);
       return updatedBook;
     } catch (error) {
       throw new Error('Error editing book');
